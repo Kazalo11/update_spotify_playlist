@@ -53,3 +53,9 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ env.AWS_DEFAULT_REGION }}
+      - name: Start function
+        run: |
+          aws lambda invoke \
+            --function-name auto-update-spotify-lambda \
+            --payload '{}' \
+            output.json
