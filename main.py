@@ -31,16 +31,20 @@ class S3CacheHandler(spotipy.CacheHandler):
 	def save_token_to_cache(self, token_info):
 		try:
 			print("Saving cache to s3 bucket")
-			response = self.s3_client.upload_file(token_info, self.bucket_name, self.cache_key)
+			response = self.s3_client.put_object(
+				Bucket=self.bucket_name,
+				Key=self.cache_key,
+				Body=token_info
+			)
 			return json.loads(response['Body'].read().decode('utf-8'))
 		except self.s3_client.exceptions.NoSuchKey:
 			return None
 		except Exception as e:
-			print(f"Error uploading from S3: {str(e)}")
+			print(f"Error uploading to S3: {str(e)}")
 			return None
 
 def main():
-	print("Checking spotify for latest saved tracks")
+	print("Starting up")
 	scope = ["user-library-read", "playlist-modify-public", "playlist-modify-private"]
 	client_id = os.getenv("SPOTIFY_ID")
 	client_secret = os.getenv("SPOTIFY_SECRET")
@@ -57,10 +61,8 @@ def main():
 		redirect_uri=redirect_uri,
 		cache_handler=cache_handler
 		)
-		print("Auth manager created, checking token...")
-		token_info = auth_manager.get_cached_token()
-		print(f"Cached token info: {token_info}")
 		sp = spotipy.Spotify(auth_manager=auth_manager)
+		print("spotipy client initalised")
 	except spotipy.SpotifyOAuthError as auth_error:
 		print(f"Authentication error: {str(auth_error)}")
 		raise
@@ -69,7 +71,7 @@ def main():
 		print(f"Error type: {type(e)}")
 		raise
 
-	print("Initalised spotipy client")
+	print("Checking spotify for latest tracks")
 	latest_tracks = sp.current_user_saved_tracks(20)['items']
 	current_playlists = sp.current_user_playlists(12)['items']
 	now = date.today()
