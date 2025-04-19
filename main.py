@@ -1,9 +1,43 @@
+import json
 import os
 from datetime import date, datetime
 
+import boto3
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
+
+class S3CacheHandler(spotipy.CacheHandler):
+	def __init__(self):
+		self.s3_client = boto3.client('s3')
+		self.bucket_name = "kazalo11-spotify-bucket"
+		self.cache_key = 'cache-key.json'
+	def get_cached_token(self):
+		try:
+			response = self.s3_client.get_object(
+				Bucket=self.bucket_name,
+				Key=self.cache_key
+			)
+			return json.loads(response['Body'].read().decode('utf-8'))
+		except self.s3_client.exceptions.NoSuchKey:
+			return None
+		except Exception as e:
+			print(f"Error reading from S3: {str(e)}")
+			return None
+		
+
+	def save_token_to_cache(self, token_info):
+		try:
+			response = self.s3_client.upload_object(
+				Bucket=self.bucket_name,
+				Key=self.cache_key
+			)
+			return json.loads(response['Body'].read().decode('utf-8'))
+		except self.s3_client.exceptions.NoSuchKey:
+			return None
+		except Exception as e:
+			print(f"Error uploading from S3: {str(e)}")
+			return None
 
 def main():
 	print("Checking spotify for latest saved tracks")
@@ -11,7 +45,8 @@ def main():
 	client_id = os.getenv("SPOTIFY_ID")
 	client_secret = os.getenv("SPOTIFY_SECRET")
 	redirect_uri = os.getenv("SPOTIFY_REDIRECT_URI")
-	sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope, client_id=client_id, client_secret=client_secret, redirect_uri=redirect_uri))
+	cache_handler = S3CacheHandler()
+	sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope, client_id=client_id, client_secret=client_secret, redirect_uri=redirect_uri,cache_handler=cache_handler))
 	latest_tracks = sp.current_user_saved_tracks(20)['items']
 	current_playlists = sp.current_user_playlists(12)['items']
 	now = date.today()
@@ -60,6 +95,7 @@ def lambda_handler(event, context):
             'statusCode': 500,
             'body': str(e)
         }
+
 
 if __name__ == "__main__":
     main()
