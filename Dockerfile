@@ -11,4 +11,4 @@ COPY . .
 RUN go build -tags lambda.norpc -o bootstrap main.go 
 EXPOSE 8080
 
-CMD ["./main"]
+CMD ["./bootstrap"]
