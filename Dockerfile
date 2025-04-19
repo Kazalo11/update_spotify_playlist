@@ -1,20 +1,31 @@
-FROM golang:1.24-alpine
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim
 
 WORKDIR /app
 
 ARG SPOTIFY_ID
 ARG SPOTIFY_SECRET
+ARG AWS_ACCESS_KEY_ID
+ARG AWS_SECRET_ACCESS_KEY
+ARG AWS_DEFAULT_REGION
 
-ENV SPOTIFY_ID $SPOTIFY_ID
-ENV SPOTIFY_SECRET $SPOTIFY_SECRET
+ENV SPOTIFY_ID=$SPOTIFY_ID
+ENV SPOTIFY_SECRET=$SPOTIFY_SECRET
+ENV AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+ENV AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+ENV AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION
 
-COPY go.mod go.sum ./
+ENV UV_COMPILE_BYTECODE=1
+ENV UV_LINK_MODE=copy
 
-RUN go mod download
+RUN --mount=type=cache,target=/root/.cache/uv \
+	--mount=type=bind,source=uv.lock,target=uv.lock \
+	--mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+	uv sync --frozen --no-install-project --no-dev
 
-COPY . .
+ADD . /app
+RUN --mount=type=cache,target=/root/.cache/uv \
+	uv sync --frozen --no-dev
 
-RUN go build -tags lambda.norpc -o bootstrap main.go 
-EXPOSE 8080
+ENV PATH="/app/.venv/bin:$PATH"
 
-CMD ["./bootstrap"]
+CMD ["uv", "run","main.py"]
