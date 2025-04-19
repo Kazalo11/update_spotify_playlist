@@ -2,6 +2,12 @@ FROM golang:1.24-alpine
 
 WORKDIR /app
 
+ARG SPOTIFY_ID
+ARG SPOTIFY_SECRET
+
+ENV SPOTIFY_ID $SPOTIFY_ID
+ENV SPOTIFY_SECRET $SPOTIFY_SECRET
+
 COPY go.mod go.sum ./
 
 RUN go mod download
