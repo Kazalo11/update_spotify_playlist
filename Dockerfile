@@ -14,8 +14,9 @@ ENV AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
 ENV AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
 ENV AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION
 
-COPY . /app/
+COPY main.py .
+COPY requirements.txt .
 
 RUN python3 -m pip install -r requirements.txt
 
-CMD [ "main.lambda_handler" ]
+CMD [ "/app/main.lambda_handler" ]
