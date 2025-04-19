@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	fmt.Println("Hello world")
+	fmt.Println("Checking for updates to spotify playlist")
 }
