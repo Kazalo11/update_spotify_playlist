@@ -48,10 +48,25 @@ def main():
 	cache_handler = S3CacheHandler()
 	print("Got cache")
 	try:
-		sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope, client_id=client_id, client_secret=client_secret, redirect_uri=redirect_uri,cache_handler=cache_handler))
+		print("Attempting to initialize Spotify client...")
+		auth_manager = SpotifyOAuth(
+		scope=scope,
+		client_id=client_id,
+		client_secret=client_secret,
+		redirect_uri=redirect_uri,
+		cache_handler=cache_handler
+		)
+		print("Auth manager created, checking token...")
+		token_info = auth_manager.get_cached_token()
+		print(f"Cached token info: {token_info}")
+		sp = spotipy.Spotify(auth_manager=auth_manager)
+	except spotipy.SpotifyOAuthError as auth_error:
+		print(f"Authentication error: {str(auth_error)}")
+		raise
 	except Exception as e:
-		print(f"Error: {str(e)}")
-		raise e
+		print(f"Unexpected error during Spotify initialization: {str(e)}")
+		print(f"Error type: {type(e)}")
+		raise
 
 	print("Initalised spotipy client")
 	latest_tracks = sp.current_user_saved_tracks(20)['items']
