@@ -50,10 +50,10 @@ def lambda_handler(event, context):
     AWS Lambda handler function
     """
     try:
-        result = main()
+        main()
         return {
             'statusCode': 200,
-            'body': result
+            'body': "Successfully updated"
         }
     except Exception as e:
         return {

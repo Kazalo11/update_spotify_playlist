@@ -11,6 +11,7 @@ jobs:
     env:
       ECR_IMAGE_TAG: latest
       AWS_DEFAULT_REGION: eu-west-2
+      SPOTIFY_REDIRECT_URI: http://127.0.0.1:8080/callback
     steps:
       - name: checkout
         uses: actions/checkout@v2
