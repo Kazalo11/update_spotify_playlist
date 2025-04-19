@@ -1,6 +1,14 @@
-FROM python:3.11-slim-bookworm
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
-ADD . /app
+FROM golang:1.24-alpine
+
 WORKDIR /app
-RUN uv sync --frozen
-CMD ["uv", "run", "main.py"]
+
+COPY go.mod go.sum ./
+
+RUN go mod download
+
+COPY . .
+
+RUN go build -o main
+EXPOSE 8080
+
+CMD ["./main"]
