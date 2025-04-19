@@ -34,7 +34,7 @@ class S3CacheHandler(spotipy.CacheHandler):
 			response = self.s3_client.put_object(
 				Bucket=self.bucket_name,
 				Key=self.cache_key,
-				Body=token_info
+				Body=json.dumps(token_info, ensure_ascii=False).encode('utf-8')
 			)
 			return json.loads(response['Body'].read().decode('utf-8'))
 		except self.s3_client.exceptions.NoSuchKey:
