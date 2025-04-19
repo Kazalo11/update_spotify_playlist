@@ -16,7 +16,6 @@ ENV AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION
 
 COPY . /app/
 
-RUN yum install -y gcc-c++ pkgconfig poppler-cpp-devel
 RUN python3 -m pip install -r requirements.txt
 
 CMD [ "main.lambda_handler" ]
