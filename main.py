@@ -14,6 +14,7 @@ class S3CacheHandler(spotipy.CacheHandler):
 		self.cache_key = 'cache-key.json'
 	def get_cached_token(self):
 		try:
+			print("Trying to get cached token from s3 bucket")
 			response = self.s3_client.get_object(
 				Bucket=self.bucket_name,
 				Key=self.cache_key
@@ -28,10 +29,8 @@ class S3CacheHandler(spotipy.CacheHandler):
 
 	def save_token_to_cache(self, token_info):
 		try:
-			response = self.s3_client.upload_object(
-				Bucket=self.bucket_name,
-				Key=self.cache_key
-			)
+			print("Saving cache to s3 bucket")
+			response = self.s3_client.upload_file(token_info, self.bucket_name, self.cache_key)
 			return json.loads(response['Body'].read().decode('utf-8'))
 		except self.s3_client.exceptions.NoSuchKey:
 			return None
@@ -45,7 +44,9 @@ def main():
 	client_id = os.getenv("SPOTIFY_ID")
 	client_secret = os.getenv("SPOTIFY_SECRET")
 	redirect_uri = os.getenv("SPOTIFY_REDIRECT_URI")
+	print("Got environment variables")
 	cache_handler = S3CacheHandler()
+	print("Got cache")
 	sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope, client_id=client_id, client_secret=client_secret, redirect_uri=redirect_uri,cache_handler=cache_handler))
 	latest_tracks = sp.current_user_saved_tracks(20)['items']
 	current_playlists = sp.current_user_playlists(12)['items']
