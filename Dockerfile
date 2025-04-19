@@ -1,4 +1,4 @@
-FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim
+FROM public.ecr.aws/lambda/python:3.13
 
 WORKDIR /app
 
@@ -14,18 +14,9 @@ ENV AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
 ENV AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
 ENV AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION
 
-ENV UV_COMPILE_BYTECODE=1
-ENV UV_LINK_MODE=copy
+COPY . /app/
 
-RUN --mount=type=cache,target=/root/.cache/uv \
-	--mount=type=bind,source=uv.lock,target=uv.lock \
-	--mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-	uv sync --frozen --no-install-project --no-dev
+RUN yum install -y gcc-c++ pkgconfig poppler-cpp-devel
+RUN python3 -m pip install -r requirements.txt
 
-ADD . /app
-RUN --mount=type=cache,target=/root/.cache/uv \
-	uv sync --frozen --no-dev
-
-ENV PATH="/app/.venv/bin:$PATH"
-
-CMD ["uv", "run","main.py"]
+CMD [ "main.lambda_handler" ]
