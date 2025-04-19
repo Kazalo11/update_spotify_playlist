@@ -1,7 +1,5 @@
 FROM public.ecr.aws/lambda/python:3.13
 
-WORKDIR /app
-
 ARG SPOTIFY_ID
 ARG SPOTIFY_SECRET
 ARG AWS_ACCESS_KEY_ID
@@ -14,9 +12,9 @@ ENV AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
 ENV AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
 ENV AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION
 
-COPY main.py .
-COPY requirements.txt .
+COPY main.py ./
+COPY requirements.txt ./
 
-RUN python3 -m pip install -r requirements.txt
+RUN pip3 install -r requirements.txt
 
-CMD [ "/app/main.lambda_handler" ]
+CMD [ "main.lambda_handler" ]
