@@ -1,9 +1,19 @@
 package main
 
 import (
-	"fmt"
+	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-lambda-go/lambda"
 )
 
 func main() {
-	fmt.Println("Checking for updates to spotify playlist")
+	lambda.Start(handler)
+}
+
+func handler(request events.LambdaFunctionURLRequest) (events.LambdaFunctionURLResponse, error) {
+	response := events.LambdaFunctionURLResponse{
+		Body:       "Hello, World!",
+		StatusCode: 200,
+	}
+
+	return response, nil
 }
