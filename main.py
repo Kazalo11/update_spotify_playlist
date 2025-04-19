@@ -9,6 +9,7 @@ from spotipy.oauth2 import SpotifyOAuth
 
 class S3CacheHandler(spotipy.CacheHandler):
 	def __init__(self):
+		print("initalising cache handler")
 		self.s3_client = boto3.client('s3')
 		self.bucket_name = "kazalo11-spotify-bucket"
 		self.cache_key = 'cache-key.json'
