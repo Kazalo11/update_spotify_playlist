@@ -33,8 +33,8 @@ jobs:
           ECR_REPOSITORY: kazalo11/update-playlist
         run: |
           docker build  \
-            --build-arg SPOTIFY_ID="${{secrets.SPOTIFY_ID}}"
-            --build-arg SPOTIFY_SECRET="${{secrets.SPOTIFY_SECRET}}"
+            --build-arg SPOTIFY_ID="${{secrets.SPOTIFY_ID}}" \
+            --build-arg SPOTIFY_SECRET="${{secrets.SPOTIFY_SECRET}}" \
             -t $ECR_REGISTRY/$ECR_REPOSITORY:${{ env.ECR_IMAGE_TAG }} .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ env.ECR_IMAGE_TAG }}
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:${{ env.ECR_IMAGE_TAG }}"
