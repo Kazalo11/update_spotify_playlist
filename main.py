@@ -48,6 +48,7 @@ def main():
 	cache_handler = S3CacheHandler()
 	print("Got cache")
 	sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope, client_id=client_id, client_secret=client_secret, redirect_uri=redirect_uri,cache_handler=cache_handler))
+	print("Initalised spotipy client")
 	latest_tracks = sp.current_user_saved_tracks(20)['items']
 	current_playlists = sp.current_user_playlists(12)['items']
 	now = date.today()
