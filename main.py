@@ -96,6 +96,8 @@ def main():
 	for latest_track in latest_tracks:
 		track_id = latest_track['track']['id']
 		added_at = latest_track["added_at"]
+		track_name = latest_track['track']['name']
+		print(f"Checking if track {track_name} is present in this month's playlist")
 		if track_id in track_ids:
 			print("Track already found, no need to add again")
 		elif not is_same_month(added_at):
