@@ -73,7 +73,7 @@ def main():
 
 	print("Checking spotify for latest tracks")
 	latest_tracks = sp.current_user_saved_tracks(20)['items']
-	current_playlists = sp.current_user_playlists(12)['items']
+	current_playlists = sp.current_user_playlists(50)['items']
 	now = date.today()
 	formatted_date = now.strftime("%b %y")
 	def checkDate(item):
@@ -104,7 +104,7 @@ def main():
 			print("Track was added at a different month")
 		else:
 			sp.playlist_add_items(playlist_id, [f'spotify:track:{track_id}'])
-			print(f"Added track ${track_id} to the playlist")
+			print(f"Added track {track_name} to the playlist")
 	return "Successfully updated"
 
 def lambda_handler(event, context):
