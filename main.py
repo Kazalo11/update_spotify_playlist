@@ -5,6 +5,7 @@ import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
 from s3_cache_handler import S3CacheHandler
+from ssm_cache_handler import SSMCacheHandler
 
 now = date.today()
 formatted_date = now.strftime("%b %y")
@@ -23,7 +24,6 @@ def main():
 	client_secret = os.getenv("SPOTIFY_SECRET")
 	redirect_uri = os.getenv("SPOTIFY_REDIRECT_URI")
 	print("Got environment variables")
-	cache_handler = S3CacheHandler()
 	print("Got cache")
 	try:
 		print("Attempting to initialize Spotify client...")
@@ -32,7 +32,7 @@ def main():
 		client_id=client_id,
 		client_secret=client_secret,
 		redirect_uri=redirect_uri,
-		cache_handler=cache_handler
+		cache_handler=SSMCacheHandler()
 		)
 		sp = spotipy.Spotify(auth_manager=auth_manager)
 		print("spotipy client initalised")
