@@ -1,47 +1,20 @@
-import json
 import os
 from datetime import date, datetime
 
-import boto3
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
+from s3_cache_handler import S3CacheHandler
 
-class S3CacheHandler(spotipy.CacheHandler):
-	def __init__(self):
-		print("initalising cache handler")
-		self.s3_client = boto3.client('s3')
-		self.bucket_name = "kazalo11-spotify-bucket"
-		self.cache_key = 'cache-key.json'
-	def get_cached_token(self):
-		try:
-			print("Trying to get cached token from s3 bucket")
-			response = self.s3_client.get_object(
-				Bucket=self.bucket_name,
-				Key=self.cache_key
-			)
-			return json.loads(response['Body'].read().decode('utf-8'))
-		except self.s3_client.exceptions.NoSuchKey:
-			return None
-		except Exception as e:
-			print(f"Error reading from S3: {str(e)}")
-			return None
-		
+now = date.today()
+formatted_date = now.strftime("%b %y")
 
-	def save_token_to_cache(self, token_info):
-		try:
-			print("Saving cache to s3 bucket")
-			response = self.s3_client.put_object(
-				Bucket=self.bucket_name,
-				Key=self.cache_key,
-				Body=json.dumps(token_info, ensure_ascii=False).encode('utf-8')
-			)
-			return response['ETag']
-		except self.s3_client.exceptions.NoSuchKey:
-			return None
-		except Exception as e:
-			print(f"Error uploading to S3: {str(e)}")
-			return None
+def checkDate(item):
+	return item['name'] == formatted_date
+
+def is_same_month(date_str: str) -> bool:
+	track_date = datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%SZ")
+	return track_date.month == now.month and track_date.year == now.year
 
 def main():
 	print("Starting up")
@@ -77,13 +50,7 @@ def main():
 	if current_playlists == []:
 		print("No playlists found")
 		return "No playlist found"
-	now = date.today()
-	formatted_date = now.strftime("%b %y")
-	def checkDate(item):
-		return item['name'] == formatted_date
-	def is_same_month(date_str: str) -> bool:
-		track_date = datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%SZ")
-		return track_date.month == now.month and track_date.year == now.year
+		
 	existing_playlist = list(filter(checkDate, current_playlists))
 	if existing_playlist != []:
 		print("Found playlist for this month")

@@ -20,6 +20,6 @@ ENV SPOTIFY_ID=${SPOTIFY_ID} \
 COPY requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt
 
-COPY main.py .
+COPY *.py .
 
 CMD [ "main.lambda_handler" ]
