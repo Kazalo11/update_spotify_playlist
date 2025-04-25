@@ -16,6 +16,7 @@ class SSMCacheHandler(spotipy.CacheHandler):
 			Name=self.parameter_name,
 			WithDecryption=False
 		)
+		print(f"Obtained token response: {response}")
 		return json.loads(response['Parameter']['Value'])
 
 	def save_token_to_cache(self, token_info):
@@ -26,3 +27,5 @@ class SSMCacheHandler(spotipy.CacheHandler):
 			Overwrite=True,
 			Tier='Standard'
 		)
+		print("Saved token to cache")
+		return None
