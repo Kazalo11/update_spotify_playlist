@@ -74,6 +74,9 @@ def main():
 	print("Checking spotify for latest tracks")
 	latest_tracks = sp.current_user_saved_tracks(20)['items']
 	current_playlists = sp.current_user_playlists(50)['items']
+	if current_playlists == []:
+		print("No playlists found")
+		return "No playlist found"
 	now = date.today()
 	formatted_date = now.strftime("%b %y")
 	def checkDate(item):
