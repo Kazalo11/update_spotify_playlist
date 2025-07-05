@@ -41,7 +41,9 @@ def main():
 		cache_handler=SSMCacheHandler(client)
 		)
 		sp = spotipy.Spotify(auth_manager=auth_manager)
-		logger.info("spotipy client initalised")
+		ssm_backfill_songs_handler = SSMBackfillSongsHandler(client)
+		backfill_songs = ssm_backfill_songs_handler.get_backfill_songs()
+		logger.info("spotipy setup initalised")
 	except spotipy.SpotifyOAuthError as auth_error:
 		logger.error(f"Authentication error: {str(auth_error)}")
 		raise
@@ -66,8 +68,7 @@ def main():
 		info = sp.user_playlist_create("18tta2lvd65imwx89d7mqr2sv",formatted_date)
 		playlist_id = info['id']
 
-	ssm_backfill_songs_handler = SSMBackfillSongsHandler(client)
-	backfill_songs = ssm_backfill_songs_handler.get_backfill_songs()
+
 	playlist = sp.playlist(playlist_id=playlist_id, fields='tracks.items(track(id))')
 	playlist_tracks = playlist['tracks']['items']
 	track_ids = [item['track']['id'] for item in playlist_tracks]
