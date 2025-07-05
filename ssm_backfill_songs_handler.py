@@ -12,13 +12,17 @@ class SSMBackfillSongsHandler:
 
     def get_backfill_songs(self) -> list[str]:
         logger.debug("Getting backfill songs from SSM")
-        response = self.client.get_parameter(
-            Name=self.parameter_name,
-            WithDecryption=False
-        )
-        values = json.loads(response['Parameter']['Value'])
-        logger.debug("Obtained values from SSM")
-        return values.split(",")
+        try:
+            response = self.client.get_parameter(
+                Name=self.parameter_name,
+                WithDecryption=False
+            )
+            values = json.loads(response['Parameter']['Value'])
+            logger.debug("Obtained values from SSM")
+            return values.split(",")
+        except Exception as e:
+            logger.error(f"Error while getting songs from SSM: {e}")
+            raise
 
     def set_backfill_songs(self, songs: list[str]):
         logger.debug("Setting backfill songs from SSM")
