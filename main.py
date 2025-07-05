@@ -2,7 +2,6 @@ import logging
 import os
 from datetime import date, datetime
 from http import HTTPStatus
-from logging import Logger
 
 import boto3
 import spotipy
@@ -14,8 +13,12 @@ from ssm_cache_handler import SSMCacheHandler
 now = date.today()
 formatted_date = now.strftime("%b %y")
 
+formatter = logging.Formatter('%(name)s - %(funcName)s - %(levelname)s - %(message)s')
+handler = logging.StreamHandler()
+handler.setFormatter(formatter)
 logger = logging.getLogger(__name__)
 logger.setLevel("DEBUG")
+logger.addHandler(handler)
 
 def checkDate(item):
 	return item['name'] == formatted_date
