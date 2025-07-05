@@ -4,12 +4,8 @@ import logging
 import spotipy
 from botocore.client import BaseClient
 
-formatter = logging.Formatter('[%(levelname)s] [%(name)s] [%(funcName)s]: %(message)s')
-handler = logging.StreamHandler()
-handler.setFormatter(formatter)
 logger = logging.getLogger(__name__)
 logger.setLevel("DEBUG")
-logger.addHandler(handler)
 
 class SSMCacheHandler(spotipy.CacheHandler):
 	def __init__(self, client: BaseClient):

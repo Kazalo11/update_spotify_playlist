@@ -2,12 +2,9 @@ import json
 import logging
 
 from botocore.client import BaseClient
-formatter = logging.Formatter('[%(levelname)s] [%(name)s] [%(funcName)s]: %(message)s')
-handler = logging.StreamHandler()
-handler.setFormatter(formatter)
+
 logger = logging.getLogger(__name__)
 logger.setLevel("DEBUG")
-logger.addHandler(handler)
 
 class SSMBackfillSongsHandler:
     def __init__(self, client: BaseClient):
@@ -38,5 +35,5 @@ class SSMBackfillSongsHandler:
             Overwrite=True,
             Value=json.dumps(string_songs, ensure_ascii=False)
         )
-        print("Saved backfill songs to SSM")
+        logger.debug("Saved backfill songs to SSM")
         return None
