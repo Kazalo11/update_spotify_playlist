@@ -1,17 +1,20 @@
 import json
+import logging
 
-import boto3
 import spotipy
+from botocore.client import BaseClient
 
+logger = logging.getLogger(__name__)
+logger.setLevel("DEBUG")
 
 class SSMCacheHandler(spotipy.CacheHandler):
-	def __init__(self):
-		print("Initalising cache handler")
-		self.client = boto3.client("ssm")
+	def __init__(self, client: BaseClient):
+		logger.debug("Initalising cache handler")
+		self.client = client
 		self.parameter_name = "auto-update-spotify-cache-token"
 	
 	def get_cached_token(self):
-		print("Trying to get cached token from parameter store")
+		logger.debug("Trying to get cached token from parameter store")
 		response = self.client.get_parameter(
 			Name=self.parameter_name,
 			WithDecryption=False
@@ -19,12 +22,12 @@ class SSMCacheHandler(spotipy.CacheHandler):
 		return json.loads(response['Parameter']['Value'])
 
 	def save_token_to_cache(self, token_info):
-		print("Trying to save cached token to parameter store")
+		logger.debug("Trying to save cached token to parameter store")
 		self.client.put_parameter(
 			Name=self.parameter_name,
 			Value=json.dumps(token_info, ensure_ascii=False),
 			Overwrite=True,
 			Tier='Standard'
 		)
-		print("Saved token to cache")
+		logger.debug("Saved token to cache")
 		return None
