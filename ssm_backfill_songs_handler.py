@@ -17,6 +17,7 @@ class SSMBackfillSongsHandler:
             WithDecryption=False
         )
         values = json.loads(response['Parameter']['Value'])
+        logger.debug("Obtained values from SSM")
         return values.split(",")
 
     def set_backfill_songs(self, songs: list[str]):
