@@ -7,7 +7,7 @@ import boto3
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
-from ssm_backfill_songs_handler import SSMBackfillSongsHandler
+from dynamo_db_handler import DynamoDBHandler
 from ssm_cache_handler import SSMCacheHandler
 
 now = date.today()
@@ -17,7 +17,7 @@ formatted_date = now.strftime("%b %y")
 logger = logging.getLogger(__name__)
 logger.setLevel("DEBUG")
 
-def checkDate(item):
+def check_date(item):
 	return item['name'] == formatted_date
 
 def is_same_month(date_str: str) -> bool:
@@ -41,8 +41,7 @@ def main():
 		cache_handler=SSMCacheHandler(client)
 		)
 		sp = spotipy.Spotify(auth_manager=auth_manager)
-		ssm_backfill_songs_handler = SSMBackfillSongsHandler(client)
-		backfill_songs = ssm_backfill_songs_handler.get_backfill_songs()
+		backfill_songs_table = DynamoDBHandler('backfilled_songs')
 		logger.info("spotipy setup initalised")
 	except spotipy.SpotifyOAuthError as auth_error:
 		logger.error(f"Authentication error: {str(auth_error)}")
@@ -59,7 +58,7 @@ def main():
 		logger.info("No playlists found")
 		return "No playlist found"
 		
-	existing_playlist = list(filter(checkDate, current_playlists))
+	existing_playlist = list(filter(check_date, current_playlists))
 	if existing_playlist:
 		logger.info("Found playlist for this month")
 		playlist_id = existing_playlist[0]['id']
@@ -81,8 +80,6 @@ def main():
 			logger.debug("Track already found, no need to add again")
 		elif not is_same_month(added_at):
 			logger.debug("Track was added at a different month")
-		elif track_id in backfill_songs:
-			logger.debug(f"Song {track_name} backfilled, won't add")
 		else:
 			sp.playlist_add_items(playlist_id, [f'spotify:track:{track_id}'])
 			logger.info(f"Added track {track_name} to the playlist")
