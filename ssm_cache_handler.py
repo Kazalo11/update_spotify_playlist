@@ -4,7 +4,7 @@ import logging
 import spotipy
 from botocore.client import BaseClient
 
-formatter = logging.Formatter('%(name)s - %(funcName)s - %(levelname)s - %(message)s')
+formatter = logging.Formatter('[%(levelname)s] [%(name)s] [%(funcName)s]: %(message)s')
 handler = logging.StreamHandler()
 handler.setFormatter(formatter)
 logger = logging.getLogger(__name__)

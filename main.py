@@ -13,7 +13,7 @@ from ssm_cache_handler import SSMCacheHandler
 now = date.today()
 formatted_date = now.strftime("%b %y")
 
-formatter = logging.Formatter('%(name)s - %(funcName)s - %(levelname)s - %(message)s')
+formatter = logging.Formatter('[%(levelname)s] [%(name)s] [%(funcName)s]: %(message)s')
 handler = logging.StreamHandler()
 handler.setFormatter(formatter)
 logger = logging.getLogger(__name__)

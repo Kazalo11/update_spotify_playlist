@@ -2,7 +2,7 @@ import json
 import logging
 
 from botocore.client import BaseClient
-formatter = logging.Formatter('%(name)s - %(funcName)s - %(levelname)s - %(message)s')
+formatter = logging.Formatter('[%(levelname)s] [%(name)s] [%(funcName)s]: %(message)s')
 handler = logging.StreamHandler()
 handler.setFormatter(formatter)
 logger = logging.getLogger(__name__)
@@ -22,7 +22,7 @@ class SSMBackfillSongsHandler:
                 WithDecryption=False
             )
             logger.debug(response)
-            values = json.loads(response['Parameter']['Value'])
+            values = response['Parameter']['Value']
             logger.debug("Obtained values from SSM")
             return values.split(",")
         except Exception as e:
