@@ -77,9 +77,11 @@ def main():
 		track_name = latest_track['track']['name']
 		logger.debug(f"Checking if track {track_name} is present in this month's playlist")
 		if track_id in track_ids:
-			logger.debug("Track already found, no need to add again")
+			logger.debug(f"Track {track_name} already found, no need to add again")
 		elif not is_same_month(added_at):
-			logger.debug("Track was added at a different month")
+			logger.debug(f"Track {track_name} was added at a different month")
+		elif backfill_songs_table.check_if_song_exists_in_db(track_id):
+			logger.debug(f"Track {track_name} was backfilled")
 		else:
 			sp.playlist_add_items(playlist_id, [f'spotify:track:{track_id}'])
 			logger.info(f"Added track {track_name} to the playlist")
